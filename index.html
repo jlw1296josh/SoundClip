@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundClip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f6f6f4;
+  --bg2:#f0efea;
+  --surface:#fff;
+  --border:#e4e3de;
+  --border2:#c8c7c0;
+  --text:#111;
+  --text2:#666;
+  --text3:#aaa;
+  --green:#16a34a;
+  --green-bg:#dcfce7;
+  --red:#dc2626;
+  --red-bg:#fee2e2;
+  --amber:#b45309;
+  --amber-bg:#fef3c7;
+  --blue:#2563eb;
+  --sidebar:196px;
+  --radius:4px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.logo{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.logo-icon{width:22px;height:22px;background:var(--text);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:12px;height:12px;fill:#fff}
+.logo-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:-0.1px}
+.logo-beta{display:none}
+.nav{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius);font-size:13px;color:var(--text2);cursor:pointer;transition:all .1s;text-decoration:none;font-weight:400;position:relative}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--bg);color:var(--text);font-weight:500}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.4}
+.nav-item.active svg{opacity:.65}
+.nav-badge{margin-left:auto;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.nav-section-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:14px 9px 4px;font-family:'DM Mono',monospace}
+.sidebar-bottom{padding:10px 8px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius);cursor:pointer}
+.user-card:hover{background:var(--bg)}
+.avatar{width:24px;height:24px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.user-name{font-size:12px;font-weight:500}
+.user-handle{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.page{display:none;flex-direction:column;flex:1}
+.page.active{display:flex}
+
+/* HEADER */
+.page-header{padding:30px 32px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.2px}
+.page-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.header-actions{display:flex;align-items:center;gap:6px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 12px;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;border:none;transition:opacity .1s;text-decoration:none;white-space:nowrap}
+.btn-dark{background:var(--text);color:#fff}
+.btn-dark:hover{opacity:.8}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-outline:hover{border-color:var(--text);color:var(--text)}
+.btn-accent{background:var(--text);color:#fff}
+.btn-accent:hover{opacity:.8}
+
+/* CONTENT */
+.content{padding:20px 32px 48px;flex:1}
+
+/* GRID CARDS */
+.campaigns-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;margin-top:16px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--border)}
+.campaign-card{background:var(--surface);padding:16px;cursor:pointer;transition:background .1s;position:relative}
+.campaign-card:hover{background:var(--bg)}
+.cc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cc-avatar{width:32px;height:32px;border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cc-info{flex:1;min-width:0}
+.cc-name{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-meta{display:flex;align-items:center;gap:5px;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:500;font-family:'DM Mono',monospace}
+.badge-green{color:var(--green)}
+.badge-amber{color:var(--amber)}
+.badge-red{background:var(--red-bg);color:var(--red);padding:1px 6px;border-radius:3px}
+.badge-gray{color:var(--text3)}
+.badge-blue{color:var(--blue)}
+.badge-dark{color:var(--text);border:1px solid var(--border2);padding:0 5px;border-radius:2px}
+.cc-days{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.cc-rates{display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:3px;margin-bottom:10px}
+.rate-item{background:var(--bg);border-radius:2px;padding:5px 7px;display:flex;align-items:center;gap:4px}
+.rate-platform{font-size:10px;color:var(--text3)}
+.rate-val{font-size:12.5px;font-weight:600;font-family:'DM Mono',monospace}
+.cc-footer{font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px}
+.lock-overlay{display:flex;align-items:center;padding:6px 0}
+.lock-btn{width:100%;height:30px;border-radius:var(--radius);background:transparent;color:var(--text2);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .1s}
+.lock-btn:hover{border-color:var(--text);color:var(--text)}
+.pot-value{font-family:'DM Mono',monospace;font-size:17px;font-weight:700;color:var(--green)}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:4px;margin-top:14px;flex-wrap:wrap}
+.filter-chip{height:26px;padding:0 10px;border-radius:2px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .1s;white-space:nowrap}
+.filter-chip:hover{border-color:var(--border2);color:var(--text)}
+.filter-chip.active{background:var(--text);color:#fff;border-color:var(--text)}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0 10px;height:30px;flex:1;max-width:200px}
+.search-box input{background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:100%}
+.search-box input::placeholder{color:var(--text3)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:20px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.stat-card{background:var(--surface);padding:18px 22px;border-right:1px solid var(--border)}
+.stat-card:last-child{border-right:none}
+.stat-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px}
+.stat-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;letter-spacing:-0.5px}
+.stat-delta{font-size:11px;color:var(--text3);margin-top:3px}
+.stat-delta.up{color:var(--green)}
+.stat-delta.down{color:var(--red)}
+
+/* CLIPS TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-top:16px;overflow:hidden}
+.table-header{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:12.5px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border)}
+thead th{padding:9px 18px;text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+tbody td{padding:11px 18px;font-size:13px;vertical-align:middle}
+.clip-thumb{width:40px;height:28px;border-radius:2px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px}
+.platform-icons{display:flex;gap:3px}
+.picon{width:18px;height:18px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;background:var(--bg)}
+.picon-tk{color:#ff2d55}
+.picon-ig{color:#9333ea}
+.picon-yt{color:#dc2626}
+.picon-x{color:#111}
+.picon-sc{color:#ea580c}
+.picon-sp{color:#16a34a}
+.views-val{font-family:'DM Mono',monospace;font-size:13px}
+.earn-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--green)}
+
+/* PAYMENTS PAGE */
+.pay-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:20px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.pay-card{background:var(--surface);padding:18px 22px;border-right:1px solid var(--border)}
+.pay-card:last-child{border-right:none}
+.pay-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px}
+.pay-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px}
+.pay-card.avail .pay-value{color:var(--green)}
+.pay-card.pend .pay-value{color:var(--amber)}
+.pay-card.life .pay-value{color:var(--text)}
+.payout-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-top:14px;overflow:hidden}
+.payout-row{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border);font-size:13px}
+.payout-row:last-child{border-bottom:none}
+.payout-label{color:var(--text2)}
+.payout-val{font-family:'DM Mono',monospace;font-weight:500}
+.payout-val.green{color:var(--green)}
+.payout-val.amber{color:var(--amber)}
+.payout-method{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.history-list{margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+
+/* SUBMIT CLIP PAGE */
+.submit-layout{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-top:18px;align-items:start}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.form-title{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;font-family:'DM Mono',monospace}
+.form-group{margin-bottom:12px}
+label{display:block;font-size:10.5px;color:var(--text3);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;font-family:'DM Mono',monospace}
+input[type=text],input[type=url],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .1s}
+input[type=text]:focus,input[type=url]:focus,select:focus,textarea:focus{border-color:var(--text);background:var(--surface)}
+textarea{resize:vertical;min-height:76px}
+select{cursor:pointer}
+.platform-select{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:4px}
+.plat-btn{padding:8px 5px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .1s;font-family:'DM Sans',sans-serif}
+.plat-btn:hover{border-color:var(--border2)}
+.plat-btn.selected{border-color:var(--text);background:var(--text);color:#fff}
+.plat-btn .plat-emoji{font-size:15px}
+.plat-btn .plat-name{font-size:10.5px;font-weight:500}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.info-card + .info-card{margin-top:8px}
+.info-title{font-size:10.5px;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace}
+.req-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.req-row:last-child{border-bottom:none}
+.req-label{color:var(--text2)}
+.req-val{font-family:'DM Mono',monospace}
+
+/* ACCOUNTS PAGE */
+.accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;margin-top:18px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--border)}
+.account-card{background:var(--surface);padding:16px}
+.acc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.acc-platform-icon{width:30px;height:30px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--bg)}
+.acc-name{font-size:13px;font-weight:600}
+.acc-handle{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px}
+.acc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.acc-stat{background:var(--bg);border-radius:2px;padding:7px 9px}
+.acc-stat-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:600}
+.acc-stat-label{font-size:10px;color:var(--text3);margin-top:1px;text-transform:uppercase;letter-spacing:.8px}
+.connect-btn{width:100%;margin-top:8px;height:30px;border-radius:var(--radius);border:1px dashed var(--border2);background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;gap:5px}
+.connect-btn:hover{border-color:var(--text);color:var(--text)}
+
+/* DASHBOARD SPECIFIC */
+.dash-grid{display:grid;grid-template-columns:1fr 256px;gap:14px;margin-top:18px}
+.active-campaigns{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ac-header{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ac-title{font-size:12.5px;font-weight:600}
+.ac-item{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .1s}
+.ac-item:hover{background:var(--bg)}
+.ac-item:last-child{border-bottom:none}
+.ac-avatar{width:30px;height:30px;border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ac-info{flex:1;min-width:0}
+.ac-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-platforms{font-size:11px;color:var(--text3);margin-top:1px}
+.ac-earn{text-align:right;flex-shrink:0}
+.ac-earn-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--green)}
+.ac-earn-label{font-size:10px;color:var(--text3);margin-top:1px;font-family:'DM Mono',monospace}
+.side-panel{display:flex;flex-direction:column;gap:8px}
+.mini-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.mini-card-header{padding:9px 14px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace}
+.mini-item{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+.mini-item:last-child{border-bottom:none}
+.mini-label{color:var(--text2)}
+.mini-val{font-family:'DM Mono',monospace;font-size:12px}
+.mini-val.green{color:var(--green)}
+.earn-banner{background:var(--text);border-radius:var(--radius);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+.eb-label{font-size:10px;color:#777;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.eb-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:700;color:#fff;line-height:1}
+.eb-sub{font-size:11px;color:#666;margin-top:3px}
+
+/* TEAMS */
+.teams-layout{display:grid;grid-template-columns:1fr 256px;gap:14px;margin-top:18px}
+.team-member-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .1s}
+.team-member-row:hover{background:var(--bg)}
+.team-member-row:last-child{border-bottom:none}
+.tm-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;flex-shrink:0}
+.tm-info{flex:1}
+.tm-name{font-size:13px;font-weight:500}
+.tm-handle{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.tm-clips{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);min-width:50px}
+.tm-earn{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--green);text-align:right;min-width:55px}
+.tm-role{font-size:11px}
+
+/* Notification dot */
+.notif{width:5px;height:5px;background:#ef4444;border-radius:50%;flex-shrink:0}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ AUTH OVERLAY ═══════════════ -->
+<div id="auth-overlay" style="position:fixed;inset:0;z-index:2000;background:#f6f6f4;display:flex;align-items:center;justify-content:center;padding:24px">
+
+  <div style="width:100%;max-width:400px">
+
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:36px">
+      <div style="width:30px;height:30px;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9zm-2 13V8l7 4-7 4z"/></svg>
+      </div>
+      <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.2px">SoundClip</span>
+    </div>
+
+    <!-- Card -->
+    <div style="background:#fff;border:1px solid #e4e3de;border-radius:28px;padding:36px 32px;box-shadow:0 4px 32px rgba(0,0,0,.06)">
+
+      <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#111;text-align:center;margin-bottom:8px">Sign in to SoundClip</h2>
+      <p style="font-size:13px;color:#aaa;text-align:center;line-height:1.6;margin-bottom:30px">Access your campaigns, clips, and earnings.<br>Get paid per 100K views — on any platform.</p>
+
+      <!-- Google button -->
+      <button id="google-btn" onclick="showAccountPicker()"
+        style="width:100%;height:46px;border-radius:999px;background:#fff;border:1.5px solid #e0dfd9;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#111;transition:all .15s;box-shadow:0 1px 6px rgba(0,0,0,.07)"
+        onmouseover="this.style.boxShadow='0 3px 14px rgba(0,0,0,.12)';this.style.borderColor='#bbb'"
+        onmouseout="this.style.boxShadow='0 1px 6px rgba(0,0,0,.07)';this.style.borderColor='#e0dfd9'">
+        <!-- Google G -->
+        <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Sign in with Google
+      </button>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:20px 0">
+        <div style="flex:1;height:1px;background:#f0efea"></div>
+        <span style="font-size:11px;color:#ccc">or</span>
+        <div style="flex:1;height:1px;background:#f0efea"></div>
+      </div>
+
+      <!-- Email fallback -->
+      <div style="margin-bottom:12px">
+        <input type="email" placeholder="Email address" id="auth-email"
+          style="width:100%;height:42px;border-radius:999px;border:1.5px solid #e0dfd9;background:#fafaf8;padding:0 18px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:#111;outline:none;transition:border-color .15s"
+          onfocus="this.style.borderColor='#111'" onblur="this.style.borderColor='#e0dfd9'"
+          onkeydown="if(event.key==='Enter')signInWithEmail()">
+      </div>
+      <button onclick="signInWithEmail()"
+        style="width:100%;height:42px;border-radius:999px;background:#111;color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;transition:opacity .15s"
+        onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+        Continue with email
+      </button>
+
+      <p style="font-size:11px;color:#ccc;text-align:center;margin-top:20px;line-height:1.7">
+        By signing in you agree to our<br>
+        <a href="#" onclick="return false" style="color:#999;text-decoration:underline">Terms of Service</a> and <a href="#" onclick="return false" style="color:#999;text-decoration:underline">Privacy Policy</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ GOOGLE ACCOUNT PICKER ═══════════════ -->
+<div id="account-picker" style="display:none;position:fixed;inset:0;z-index:2001;background:rgba(0,0,0,.35);align-items:center;justify-content:center;backdrop-filter:blur(2px)">
+  <div style="background:#fff;border-radius:28px;width:360px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.18)">
+
+    <!-- Google header -->
+    <div style="padding:24px 24px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <!-- Google wordmark -->
+        <svg height="24" viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg">
+          <text y="20" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#4285F4">G</text>
+          <text x="15" y="20" font-family="Arial,sans-serif" font-size="22" fill="#EA4335">o</text>
+          <text x="28" y="20" font-family="Arial,sans-serif" font-size="22" fill="#FBBC05">o</text>
+          <text x="40" y="20" font-family="Arial,sans-serif" font-size="22" fill="#4285F4">g</text>
+          <text x="52" y="20" font-family="Arial,sans-serif" font-size="22" fill="#34A853">l</text>
+          <text x="59" y="20" font-family="Arial,sans-serif" font-size="22" fill="#EA4335">e</text>
+        </svg>
+        <button onclick="hideAccountPicker()" style="width:30px;height:30px;border-radius:50%;background:#f1f3f4;border:none;cursor:pointer;font-size:16px;color:#5f6368;display:flex;align-items:center;justify-content:center;line-height:1">×</button>
+      </div>
+      <div style="font-family:Arial,sans-serif;font-size:16px;font-weight:500;color:#202124">Choose an account</div>
+      <div style="font-family:Arial,sans-serif;font-size:14px;color:#5f6368;margin-top:2px">to continue to <strong style="color:#202124">SoundClip</strong></div>
+    </div>
+
+    <!-- Accounts list -->
+    <div style="border-top:1px solid #f1f3f4">
+
+      <!-- Account 1 -->
+      <div onclick="signIn('Josh','jlw1296josh@gmail.com','J')"
+        style="display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;transition:background .1s"
+        onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
+        <div style="width:40px;height:40px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;font-family:Arial,sans-serif">J</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:Arial,sans-serif;font-size:14px;font-weight:500;color:#202124">Josh</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#5f6368">jlw1296josh@gmail.com</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <!-- Account 2 -->
+      <div onclick="signIn('Josh W.','joshwright.dev@gmail.com','J')"
+        style="display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;transition:background .1s;border-top:1px solid #f1f3f4"
+        onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
+        <div style="width:40px;height:40px;border-radius:50%;background:#4285F4;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;font-family:Arial,sans-serif">J</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:Arial,sans-serif;font-size:14px;font-weight:500;color:#202124">Josh W.</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#5f6368">joshwright.dev@gmail.com</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <!-- Use another -->
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;transition:background .1s;border-top:1px solid #f1f3f4"
+        onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'"
+        onclick="hideAccountPicker()">
+        <div style="width:40px;height:40px;border-radius:50%;background:#f1f3f4;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><path d="M15 8h6M18 5v6"/></svg>
+        </div>
+        <div style="font-family:Arial,sans-serif;font-size:14px;color:#202124">Use another account</div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:14px 24px;border-top:1px solid #f1f3f4;display:flex;justify-content:center;gap:20px">
+      <a href="#" onclick="return false" style="font-family:Arial,sans-serif;font-size:12px;color:#5f6368;text-decoration:none">Privacy</a>
+      <a href="#" onclick="return false" style="font-family:Arial,sans-serif;font-size:12px;color:#5f6368;text-decoration:none">Terms</a>
+      <a href="#" onclick="return false" style="font-family:Arial,sans-serif;font-size:12px;color:#5f6368;text-decoration:none">Help</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo" onclick="goTo('home')" style="cursor:pointer">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9zm-2 13V8l7 4-7 4z"/></svg>
+    </div>
+    <div>
+      <span class="logo-name">SoundClip</span>
+      <span class="logo-beta">BETA</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item" data-page="dashboard" onclick="goTo('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" data-page="campaigns" onclick="goTo('campaigns')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0 1 9-9 9 9 0 0 1 9 9v1"/></svg>
+      Campaigns
+      <span class="nav-badge">66</span>
+    </a>
+    <a class="nav-item" data-page="clips" onclick="goTo('clips')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.845v6.31a1 1 0 0 1-1.447.914L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/></svg>
+      My Clips
+    </a>
+    <a class="nav-item" data-page="submit" onclick="goTo('submit')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+      Submit Clip
+    </a>
+    <a class="nav-item" data-page="payments" onclick="goTo('payments')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Payments
+    </a>
+    <a class="nav-item" data-page="accounts" onclick="goTo('accounts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/></svg>
+      Accounts
+    </a>
+
+    <div class="nav-section-label" style="margin-top:8px">Feedback</div>
+    <a class="nav-item" onclick="openBugModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      Report Bug
+    </a>
+    <a class="nav-item" onclick="openFeatureModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Request Feature
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-card" style="position:relative" onclick="toggleUserMenu()" id="user-card-btn">
+      <div class="avatar" id="sidebar-avatar">J</div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name" id="sidebar-name">Josh</div>
+        <div class="user-handle" id="sidebar-handle">jlw1296josh@gmail.com</div>
+      </div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.3;flex-shrink:0"><path d="M8 9l4-4 4 4M16 15l-4 4-4-4"/></svg>
+    </div>
+    <!-- User menu -->
+    <div id="user-menu" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;margin-top:4px;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+      <button onclick="signOut()" style="width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--red);cursor:pointer;border-radius:7px;display:flex;align-items:center;gap:7px;transition:background .1s"
+        onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign out
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ═══════════════ HOME ═══════════════ -->
+  <div id="page-home" class="page active" style="background:var(--bg);overflow-y:auto">
+
+    <!-- Hero — full-bleed dark band -->
+    <div style="background:#111;padding:52px 40px 56px;position:relative;overflow:hidden">
+      <!-- soft background circle for depth -->
+      <div style="position:absolute;right:-80px;top:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;left:30%;bottom:-120px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%);pointer-events:none"></div>
+
+      <!-- live badge -->
+      <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 14px;margin-bottom:28px">
+        <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0"></div>
+        <span style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.5px;font-family:'DM Mono',monospace">66 campaigns live now</span>
+      </div>
+
+      <h1 style="font-family:'Syne',sans-serif;font-size:46px;font-weight:700;color:#fff;letter-spacing:-1.5px;line-height:1.06;margin-bottom:20px;max-width:520px">
+        Get paid for clips<br>you're already posting.
+      </h1>
+      <p style="font-size:15px;color:rgba(255,255,255,.55);line-height:1.75;max-width:440px;margin-bottom:10px">
+        SoundClip pays creators per 100K views on campaigns from artists, brands, and shows. Pick one you like, post naturally, collect.
+      </p>
+      <p style="font-size:13px;color:rgba(255,255,255,.3);margin-bottom:34px">No sponsorship deals. No hidden requirements.</p>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="goTo('campaigns')"
+          style="height:42px;padding:0 24px;border-radius:999px;background:#fff;color:#111;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;border:none;cursor:pointer;transition:opacity .15s"
+          onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          Browse Campaigns
+        </button>
+        <button onclick="goTo('dashboard')"
+          style="height:42px;padding:0 24px;border-radius:999px;background:transparent;color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;border:1px solid rgba(255,255,255,.18);cursor:pointer;transition:all .15s"
+          onmouseover="this.style.borderColor='rgba(255,255,255,.45)';this.style.color='#fff'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,.18)';this.style.color='rgba(255,255,255,.6)'">
+          Open Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="padding:28px 32px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px">$2.4M</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:5px">Paid to creators</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px">66</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:5px">Active campaigns</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px">$300</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:5px">Max per 100K views</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px">12K+</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:5px">Active clippers</div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div style="padding:36px 32px 0">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:14px">How it works</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px">
+          <div style="width:34px;height:34px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;font-family:'DM Mono',monospace;margin-bottom:18px;flex-shrink:0">1</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:7px">Pick a campaign</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.7">Browse 66+ open campaigns from artists, brands, and shows. Filter by pay rate, platform, or genre.</div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px">
+          <div style="width:34px;height:34px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;font-family:'DM Mono',monospace;margin-bottom:18px;flex-shrink:0">2</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:7px">Post your clip</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.7">Submit your link after posting. TikTok, Instagram, YouTube, and X are all supported.</div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px">
+          <div style="width:34px;height:34px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;font-family:'DM Mono',monospace;margin-bottom:18px;flex-shrink:0">3</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:7px">Get paid</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.7">Once your clip hits the view threshold it's approved and payment is sent to your PayPal.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Explore section cards -->
+    <div style="padding:36px 32px 56px">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:14px">Explore</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+        <div onclick="goTo('dashboard')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">📊</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Dashboard</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">Earnings, active campaigns, and weekly performance in one view.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">Open →</div>
+        </div>
+
+        <div onclick="goTo('campaigns')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">📢</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Campaigns</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">66 open campaigns paying up to $300 per 100K views.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">Browse →</div>
+        </div>
+
+        <div onclick="goTo('submit')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">🎬</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Submit a Clip</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">Link your post and track it from approval through to payment.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">Submit →</div>
+        </div>
+
+        <div onclick="goTo('payments')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">💰</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Payments</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">See your balance, pending earnings, and full payout history.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">View →</div>
+        </div>
+
+        <div onclick="goTo('teams')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">👥</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Teams</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">Clip with a crew, share campaigns, and split earnings automatically.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">Manage →</div>
+        </div>
+
+        <div onclick="goTo('accounts')" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.08)'"
+          onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:16px">🔗</div>
+          <div style="font-size:13.5px;font-weight:600;margin-bottom:5px">Accounts</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.6;flex:1">Manage your connected TikTok, Instagram, YouTube, and X accounts.</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">Connect →</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ DASHBOARD ═══════════════ -->
+  <div id="page-dashboard" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Good morning, Josh</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="goTo('campaigns')">Browse</button>
+        <button class="btn btn-dark" onclick="goTo('submit')">New Clip</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- EARN BANNER -->
+      <div class="earn-banner">
+        <div class="eb-left">
+          <div class="eb-label">Available</div>
+          <div class="eb-val">$620</div>
+          <div class="eb-sub">$850 pending · $19,350 lifetime</div>
+        </div>
+        <button class="btn btn-accent" style="height:36px;padding:0 18px;background:#fff;color:#111" onclick="goTo('payments')">View Payments</button>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Views</div>
+          <div class="stat-value">4.2M</div>
+          <div class="stat-delta up">↑ 18% this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Campaigns</div>
+          <div class="stat-value">7</div>
+          <div class="stat-delta">of 12 submitted</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Clips Posted</div>
+          <div class="stat-value">43</div>
+          <div class="stat-delta up">↑ 5 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Earned (Month)</div>
+          <div class="stat-value">$1,240</div>
+          <div class="stat-delta up">↑ 32% vs last month</div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID -->
+      <div class="dash-grid">
+        <div class="active-campaigns">
+          <div class="ac-header">
+            <span class="ac-title">Active Campaigns</span>
+            <a class="btn btn-outline" style="height:28px;font-size:12px;padding:0 12px" onclick="goTo('campaigns')">View All</a>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎵</div>
+            <div class="ac-info">
+              <div class="ac-name">Drake</div>
+              <div class="ac-platforms">TikTok · Instagram · X &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$40</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎸</div>
+            <div class="ac-info">
+              <div class="ac-name">Kalshi</div>
+              <div class="ac-platforms">TikTok · Instagram · YouTube · X &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$100</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎤</div>
+            <div class="ac-info">
+              <div class="ac-name">Beabadoobee</div>
+              <div class="ac-platforms">TikTok · YouTube &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$75</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎧</div>
+            <div class="ac-info">
+              <div class="ac-name">John Malek</div>
+              <div class="ac-platforms">TikTok · Instagram · YouTube &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$250</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎼</div>
+            <div class="ac-info">
+              <div class="ac-name">Impaulsive (Podcast)</div>
+              <div class="ac-platforms">TikTok · Instagram · YouTube &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$50</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎬</div>
+            <div class="ac-info">
+              <div class="ac-name">Ru Paul's Drag Race</div>
+              <div class="ac-platforms">TikTok · Instagram · YouTube &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$50</div>
+              <div class="ac-earn-label">per 100K</div>
+            </div>
+          </div>
+          <div class="ac-item">
+            <div class="ac-avatar">🎙️</div>
+            <div class="ac-info">
+              <div class="ac-name">YourRAGE</div>
+              <div class="ac-platforms">TikTok · Instagram · YouTube &nbsp;·&nbsp; <span class="badge badge-green">Active</span></div>
+            </div>
+            <div class="ac-earn">
+              <div class="ac-earn-val">$5K</div>
+              <div class="ac-earn-label">pot value</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-panel">
+          <div class="mini-card">
+            <div class="mini-card-header">Earnings</div>
+            <div class="mini-item"><span class="mini-label">Available</span><span class="mini-val green">$620.00</span></div>
+            <div class="mini-item"><span class="mini-label">Pending</span><span class="mini-val" style="color:var(--amber)">$850.00</span></div>
+            <div class="mini-item"><span class="mini-label">Lifetime Total</span><span class="mini-val">$19,350.00</span></div>
+            <div class="mini-item"><span class="mini-label">Payout Method</span><span class="mini-val">PayPal</span></div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-header">This Week</div>
+            <div class="mini-item"><span class="mini-label">TikTok</span><span class="mini-val">2.1M views</span></div>
+            <div class="mini-item"><span class="mini-label">Instagram</span><span class="mini-val">890K views</span></div>
+            <div class="mini-item"><span class="mini-label">YouTube</span><span class="mini-val">640K views</span></div>
+            <div class="mini-item"><span class="mini-label">X / Twitter</span><span class="mini-val">570K views</span></div>
+            <div class="mini-item"><span class="mini-label">SoundCloud</span><span class="mini-val">90K plays</span></div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-header">Alerts</div>
+            <div class="mini-item"><span class="mini-label">Drake clip approved</span><span class="mini-val green">+$40</span></div>
+            <div class="mini-item"><span class="mini-label">Kalshi payment pending</span><span class="mini-val" style="color:var(--amber)">$100</span></div>
+            <div class="mini-item"><span class="mini-label">New campaign: EDC</span><span class="mini-val badge-blue">23d left</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CAMPAIGNS ═══════════════ -->
+  <div id="page-campaigns" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Campaigns</div>
+        <div class="page-sub">66 open campaigns</div>
+      </div>
+      <div class="header-actions">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Search campaigns…">
+        </div>
+        <button class="btn btn-outline">🎚 Filters</button>
+        <button class="btn btn-dark" id="new-campaign-btn" style="display:none" onclick="openCreateCampaign()">+ New Campaign</button>
+      </div>
+    </div>
+    <div class="content">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:0;padding:2px 0">
+        New to campaigns? <a style="color:var(--text);cursor:pointer;text-decoration:underline">See how it works</a>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="music">🎵 Music</button>
+        <button class="filter-chip" data-filter="podcast">🎙 Podcast</button>
+        <button class="filter-chip" data-filter="tv-film">📺 TV / Film</button>
+        <button class="filter-chip" data-filter="gaming">🎮 Gaming</button>
+        <button class="filter-chip" data-filter="trending">🌍 Trending</button>
+        <button class="filter-chip" data-filter="high-pay">💰 High Pay</button>
+        <button class="filter-chip" data-filter="ending-soon">⏰ Ending Soon</button>
+      </div>
+      <div id="campaigns-grid" class="campaigns-grid"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MY CLIPS ═══════════════ -->
+  <div id="page-clips" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">My Clips</div>
+        <div class="page-sub" id="clips-sub">0 clips posted · all time</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline">Export CSV</button>
+        <button class="btn btn-dark" onclick="goTo('submit')">+ Submit Clip</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="filter-bar">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="approved">✅ Approved</button>
+        <button class="filter-chip" data-filter="pending">⏳ Pending</button>
+        <button class="filter-chip" data-filter="rejected">❌ Rejected</button>
+        <button class="filter-chip" data-filter="music">🎵 Music</button>
+        <button class="filter-chip" data-filter="podcast">🎙 Podcast</button>
+        <button class="filter-chip" data-filter="tv-film">📺 TV / Film</button>
+        <button class="filter-chip" data-filter="gaming">🎮 Gaming</button>
+        <button class="filter-chip" data-filter="trending">🌍 Trending</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">Clip History</span>
+          <span id="clips-count" style="font-size:12px;color:var(--text3)">Showing 0 clips</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Clip</th>
+              <th>Campaign</th>
+              <th>Platform</th>
+              <th>Posted</th>
+              <th>Views</th>
+              <th>Status</th>
+              <th>Earned</th>
+            </tr>
+          </thead>
+          <tbody id="clips-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SUBMIT CLIP ═══════════════ -->
+  <div id="page-submit" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Submit Clip</div>
+        <div class="page-sub">Submit a clip to a campaign</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="submit-layout">
+        <div>
+          <div class="form-card">
+            <div class="form-title">Clip Details</div>
+
+            <div class="form-group">
+              <label>Campaign</label>
+              <select id="submit-campaign">
+                <option value="">Select a campaign…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Clip URL</label>
+              <input id="submit-url" type="url" placeholder="https://www.tiktok.com/@you/video/...">
+            </div>
+            <div class="form-group">
+              <label>Platform</label>
+              <div class="platform-select">
+                <button class="plat-btn selected" onclick="togglePlat(this)">
+                  <span class="plat-emoji">🎵</span>
+                  <span class="plat-name">TikTok</span>
+                </button>
+                <button class="plat-btn" onclick="togglePlat(this)">
+                  <span class="plat-emoji">📸</span>
+                  <span class="plat-name">Instagram</span>
+                </button>
+                <button class="plat-btn" onclick="togglePlat(this)">
+                  <span class="plat-emoji">▶️</span>
+                  <span class="plat-name">YouTube</span>
+                </button>
+                <button class="plat-btn" onclick="togglePlat(this)">
+                  <span class="plat-emoji">✖️</span>
+                  <span class="plat-name">X / Twitter</span>
+                </button>
+                <button class="plat-btn" onclick="togglePlat(this)">
+                  <span class="plat-emoji">☁️</span>
+                  <span class="plat-name">SoundCloud</span>
+                </button>
+                <button class="plat-btn" onclick="togglePlat(this)">
+                  <span class="plat-emoji">🎵</span>
+                  <span class="plat-name">Spotify</span>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Account (for this platform)</label>
+              <select>
+                <option>@jlw1296 (TikTok · 48K followers)</option>
+                <option>@jlw1296 (Instagram · 22K followers)</option>
+                <option>@jlw1296 (YouTube · 11K subscribers)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Notes (optional)</label>
+              <textarea id="submit-notes" placeholder="Any context about this clip or how you edited it…"></textarea>
+            </div>
+            <div id="submit-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px"></div>
+            <button class="btn btn-dark" style="width:100%;justify-content:center;height:36px" onclick="submitClip()">Submit Clip</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="info-card">
+            <div class="info-title">Requirements</div>
+            <div class="req-row"><span class="req-label">Min Views</span><span class="req-val">100,000</span></div>
+            <div class="req-row"><span class="req-label">Platforms</span><span class="req-val">TikTok, IG, X</span></div>
+            <div class="req-row"><span class="req-label">Up to / 100K</span><span class="req-val">$40</span></div>
+            <div class="req-row"><span class="req-label">Campaign Ends</span><span class="req-val">21 days</span></div>
+            <div class="req-row"><span class="req-label">Status</span><span class="req-val"><span class="badge badge-green">Active</span></span></div>
+          </div>
+          <div class="info-card" style="margin-top:8px">
+            <div class="info-title">Approval Tips</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.8">
+              <div>Use original audio from the campaign</div>
+              <div>Don't layer other music on top</div>
+              <div>Keep clips between 30–90 seconds</div>
+              <div>Post must be public before submitting</div>
+              <div style="color:var(--red)">No watermarks from other editing apps</div>
+            </div>
+          </div>
+          <div class="info-card" style="margin-top:8px">
+            <div class="info-title">Estimate</div>
+            <div class="req-row"><span class="req-label">100K views</span><span class="req-val" style="color:var(--green)">$40</span></div>
+            <div class="req-row"><span class="req-label">500K views</span><span class="req-val" style="color:var(--green)">$200</span></div>
+            <div class="req-row"><span class="req-label">1M views</span><span class="req-val" style="color:var(--green)">$400</span></div>
+            <div class="req-row"><span class="req-label">5M views</span><span class="req-val" style="color:var(--green)">$2,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAYMENTS ═══════════════ -->
+  <div id="page-payments" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Payments</div>
+        <div class="page-sub">Earnings and payouts</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-dark" onclick="initiateWithdraw()">Withdraw $620</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pay-summary">
+        <div class="pay-card avail">
+          <div class="pay-label">Available</div>
+          <div class="pay-value">$620</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:6px">Ready to withdraw</div>
+        </div>
+        <div class="pay-card pend">
+          <div class="pay-label">Pending</div>
+          <div class="pay-value">$850</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:6px">Processing · 3–5 days</div>
+        </div>
+        <div class="pay-card life">
+          <div class="pay-label">Lifetime Earned</div>
+          <div class="pay-value">$19,350</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:6px">Since Jan 2024</div>
+        </div>
+      </div>
+
+      <div class="payout-box">
+        <div class="payout-row" style="background:var(--bg2)">
+          <span style="font-weight:600;font-size:13px">Payout Summary</span>
+          <span class="payout-method">PayPal</span>
+        </div>
+        <div class="payout-row"><span class="payout-label">Available</span><span class="payout-val green">$620.00</span></div>
+        <div class="payout-row"><span class="payout-label">Pending</span><span class="payout-val" style="color:var(--amber)">$850.00</span></div>
+        <div class="payout-row"><span class="payout-label">Minimum Payout</span><span class="payout-val">$50.00</span></div>
+        <div class="payout-row"><span class="payout-label">Processing Time</span><span class="payout-val">3–5 business days</span></div>
+        <div class="payout-row"><span class="payout-label">Method</span><span class="payout-val">PayPal · jlw1296josh@gmail.com</span></div>
+      </div>
+
+      <div class="history-list" style="margin-top:16px;overflow:hidden;border-radius:var(--radius)">
+        <div class="table-header">
+          <span class="table-title">Payment History</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Campaign</th><th>Clip Views</th><th>Amount</th><th>Status</th><th>Method</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">May 22, 2026</td><td>Drake</td><td><span class="views-val">2.1M</span></td><td><span class="earn-val">$840</span></td><td><span class="badge badge-amber">Pending</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">May 17, 2026</td><td>Kalshi</td><td><span class="views-val">890K</span></td><td><span class="earn-val">$890</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">May 13, 2026</td><td>John Malek</td><td><span class="views-val">210K</span></td><td><span class="earn-val">$525</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">May 10, 2026</td><td>YourRAGE</td><td><span class="views-val">1.8M</span></td><td><span class="earn-val">$2,400</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">May 5, 2026</td><td>Beabadoobee</td><td><span class="views-val">1.4M</span></td><td><span class="earn-val">$1,050</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">Apr 28, 2026</td><td>Impaulsive</td><td><span class="views-val">340K</span></td><td><span class="earn-val">$170</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+            <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">Apr 19, 2026</td><td>EDC</td><td><span class="views-val">560K</span></td><td><span class="earn-val">$560</span></td><td><span class="badge badge-green">Paid</span></td><td style="color:var(--text3);font-size:12px">PayPal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ACCOUNTS ═══════════════ -->
+  <div id="page-accounts" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Accounts</div>
+        <div class="page-sub">Connected social accounts</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-dark" onclick="openConnectModal(null)">+ Connect Account</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="accounts-grid" class="accounts-grid"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════ CONNECT ACCOUNT MODAL ═══════════════ -->
+<div id="connect-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:400px;padding:28px;box-sizing:border-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="connect-modal-icon" style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px"></div>
+        <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif" id="connect-modal-title">Connect Account</div>
+      </div>
+      <button onclick="closeConnectModal()" style="border:none;background:none;cursor:pointer;font-size:22px;color:var(--text3);line-height:1;padding:0 4px">×</button>
+    </div>
+    <div id="connect-modal-sub" style="font-size:13px;color:var(--text2);margin-bottom:20px"></div>
+
+    <div id="connect-platform-list" style="display:none;margin-bottom:16px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:8px">CHOOSE PLATFORM</div>
+      <div id="connect-platform-btns" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">USERNAME / HANDLE <span style="color:var(--red)">*</span></div>
+      <input id="connect-handle" type="text" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="@yourhandle"
+        onfocus="this.style.borderColor='var(--text)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <div id="connect-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:10px"></div>
+
+    <div style="display:flex;gap:8px">
+      <button onclick="closeConnectModal()" style="flex:1;border:1px solid var(--border);background:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="saveConnectModal()" style="flex:2;border:none;background:#111;color:#fff;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REPORT BUG MODAL ═══════════════ -->
+<div id="bug-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:440px;padding:28px;box-sizing:border-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif">Report a Bug</div>
+      <button onclick="closeBugModal()" style="border:none;background:none;cursor:pointer;font-size:22px;color:var(--text3);line-height:1;padding:0 4px">×</button>
+    </div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Found something broken? Let us know and we'll fix it.</div>
+
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">YOUR EMAIL <span style="color:var(--red)">*</span></div>
+      <input id="bug-email" type="email" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="you@example.com"
+        onfocus="this.style.borderColor='var(--text)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">WHAT HAPPENED? <span style="color:var(--red)">*</span></div>
+      <textarea id="bug-desc" rows="4" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;resize:vertical;outline:none;transition:border-color .15s" placeholder="Describe the bug — what you did, what you expected, and what actually happened…"
+        onfocus="this.style.borderColor='var(--text)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+    <div id="bug-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:10px"></div>
+
+    <div style="display:flex;gap:8px">
+      <button onclick="closeBugModal()" style="flex:1;border:1px solid var(--border);background:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="submitBug()" style="flex:2;border:none;background:#111;color:#fff;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Send Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REQUEST FEATURE MODAL ═══════════════ -->
+<div id="feature-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:440px;padding:28px;box-sizing:border-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif">Request a Feature</div>
+      <button onclick="closeFeatureModal()" style="border:none;background:none;cursor:pointer;font-size:22px;color:var(--text3);line-height:1;padding:0 4px">×</button>
+    </div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Have an idea that would make SoundClip better? We'd love to hear it.</div>
+
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">YOUR EMAIL <span style="color:var(--red)">*</span></div>
+      <input id="feat-email" type="email" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;outline:none;transition:border-color .15s" placeholder="you@example.com"
+        onfocus="this.style.borderColor='var(--text)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">DESCRIBE YOUR IDEA <span style="color:var(--red)">*</span></div>
+      <textarea id="feat-desc" rows="4" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;resize:vertical;outline:none;transition:border-color .15s" placeholder="What would you like SoundClip to do? The more detail the better…"
+        onfocus="this.style.borderColor='var(--text)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+    <div id="feat-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:10px"></div>
+
+    <div style="display:flex;gap:8px">
+      <button onclick="closeFeatureModal()" style="flex:1;border:1px solid var(--border);background:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="submitFeature()" style="flex:2;border:none;background:#111;color:#fff;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Send Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ WITHDRAW MODAL ═══════════════ -->
+<div id="withdraw-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:380px;padding:28px;box-sizing:border-box">
+    <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:6px">Withdraw Earnings</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:22px">Your available balance will be sent to your connected payout method.</div>
+    <div style="background:var(--bg);border-radius:8px;padding:14px 16px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace">AMOUNT</span>
+        <span style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--green)">$620.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3)">
+        <span>Method</span><span style="font-family:'DM Mono',monospace">PayPal · jlw1296josh@gmail.com</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-top:4px">
+        <span>Processing</span><span style="font-family:'DM Mono',monospace">3–5 business days</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeWithdraw()" style="flex:1;border:1px solid var(--border);background:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="confirmWithdraw()" style="flex:2;border:none;background:#111;color:#fff;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Confirm Withdrawal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CAMPAIGN MODAL ═══════════════ -->
+<div id="camp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;padding:28px 28px 24px;box-sizing:border-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+      <div id="camp-modal-title" style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif">Edit Campaign</div>
+      <button onclick="closeCampaignModal()" style="border:none;background:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1;padding:0 4px">×</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:flex-end">
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">EMOJI</div>
+        <input id="camp-emoji" type="text" maxlength="4" style="width:54px;text-align:center;font-size:22px;border:1px solid var(--border);border-radius:8px;padding:6px 4px;box-sizing:border-box" placeholder="🎵">
+      </div>
+      <div style="flex:1">
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">NAME</div>
+        <input id="camp-name" type="text" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;box-sizing:border-box" placeholder="Campaign name">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">STATUS</div>
+        <select id="camp-status" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box">
+          <option value="active">Active</option>
+          <option value="private">Private</option>
+          <option value="pot">Pot</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">DAYS LEFT</div>
+        <input id="camp-days" type="number" min="1" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-family:inherit;font-size:13px;box-sizing:border-box" placeholder="30">
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">RATE TYPE</div>
+        <select id="camp-rate-type" onchange="togglePotFields()" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box">
+          <option value="per100k">Per 100K</option>
+          <option value="pot">Pot</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="camp-rates-section">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:6px">RATES PER 100K VIEWS ($) — leave blank to hide platform</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+        <div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px">TK</div>
+          <input id="camp-tk" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="–">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px">IG</div>
+          <input id="camp-ig" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="–">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px">YT</div>
+          <input id="camp-yt" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="–">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px">X</div>
+          <input id="camp-x" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="–">
+        </div>
+      </div>
+    </div>
+
+    <div id="camp-pot-section" style="display:none;margin-bottom:14px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">POT VALUE ($)</div>
+      <input id="camp-pot-value" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="e.g. 20000">
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:5px">MIN VIEWS (K)</div>
+      <input id="camp-min-views" type="number" min="0" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:13px;box-sizing:border-box" placeholder="e.g. 100">
+    </div>
+
+    <div style="margin-bottom:22px">
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;margin-bottom:8px">TAGS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="trending"> 🌍 Trending</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="high-pay"> 💰 High Pay</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="music"> 🎵 Music</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="podcast"> 🎙 Podcast</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="tv-film"> 📺 TV/Film</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="gaming"> 🎮 Gaming</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" class="tag-check" value="ending-soon"> ⏰ Ending Soon</label>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:18px">
+      <button id="camp-delete-btn" onclick="deleteCampaignModal()" style="border:1px solid var(--border);background:none;border-radius:8px;padding:8px 14px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit">Delete</button>
+      <div style="flex:1"></div>
+      <button onclick="closeCampaignModal()" style="border:1px solid var(--border);background:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="saveCampaignModal()" style="border:none;background:#111;color:#fff;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600">Save Campaign</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Feedback (Bug / Feature) ──────────────────────────────────
+var _r = ['jlw1296', 'josh', 'gmail', 'com'];
+function _dest() { return _r[0] + _r[1] + '@' + _r[2] + '.' + _r[3]; }
+
+function openBugModal() {
+  document.getElementById('bug-email').value = '';
+  document.getElementById('bug-desc').value = '';
+  document.getElementById('bug-error').style.display = 'none';
+  document.getElementById('bug-modal').style.display = 'flex';
+}
+function closeBugModal() {
+  document.getElementById('bug-modal').style.display = 'none';
+}
+function submitBug() {
+  var email = document.getElementById('bug-email').value.trim();
+  var desc  = document.getElementById('bug-desc').value.trim();
+  var err   = document.getElementById('bug-error');
+  if (!email || !email.includes('@')) { err.textContent = 'Please enter a valid email address.'; err.style.display = ''; return; }
+  if (!desc) { err.textContent = 'Please describe the bug.'; err.style.display = ''; return; }
+  err.style.display = 'none';
+  var subject = encodeURIComponent('[SoundClip Bug] from ' + email);
+  var body    = encodeURIComponent('From: ' + email + '\n\n' + desc);
+  window.open('mailto:' + _dest() + '?subject=' + subject + '&body=' + body);
+  closeBugModal();
+}
+
+function openFeatureModal() {
+  document.getElementById('feat-email').value = '';
+  document.getElementById('feat-desc').value = '';
+  document.getElementById('feat-error').style.display = 'none';
+  document.getElementById('feature-modal').style.display = 'flex';
+}
+function closeFeatureModal() {
+  document.getElementById('feature-modal').style.display = 'none';
+}
+function submitFeature() {
+  var email = document.getElementById('feat-email').value.trim();
+  var desc  = document.getElementById('feat-desc').value.trim();
+  var err   = document.getElementById('feat-error');
+  if (!email || !email.includes('@')) { err.textContent = 'Please enter a valid email address.'; err.style.display = ''; return; }
+  if (!desc) { err.textContent = 'Please describe your feature request.'; err.style.display = ''; return; }
+  err.style.display = 'none';
+  var subject = encodeURIComponent('[SoundClip Feature Request] from ' + email);
+  var body    = encodeURIComponent('From: ' + email + '\n\n' + desc);
+  window.open('mailto:' + _dest() + '?subject=' + subject + '&body=' + body);
+  closeFeatureModal();
+}
+
+// ── Withdraw ─────────────────────────────────────────────────
+function initiateWithdraw() {
+  document.getElementById('withdraw-modal').style.display = 'flex';
+}
+function closeWithdraw() {
+  document.getElementById('withdraw-modal').style.display = 'none';
+}
+function confirmWithdraw() {
+  closeWithdraw();
+  // Show success state
+  var btn = document.querySelector('#page-payments .btn-dark');
+  if (btn) { btn.textContent = '✓ Withdrawal Requested'; btn.disabled = true; btn.style.opacity = '.6'; }
+  setTimeout(function() {
+    if (btn) { btn.textContent = 'Withdraw $620'; btn.disabled = false; btn.style.opacity = ''; }
+  }, 4000);
+}
+
+// ── Navigation ──────────────────────────────────────────────
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  const navItem = document.querySelector('[data-page="' + page + '"]');
+  if (navItem) navItem.classList.add('active');
+  if (page === 'submit') populateSubmitSelect();
+  if (page === 'accounts') renderAccounts();
+  window.scrollTo(0, 0);
+}
+
+// ── Platform toggle (submit page) ────────────────────────────
+function togglePlat(btn) {
+  btn.classList.toggle('selected');
+}
+
+// ── Clips Data ───────────────────────────────────────────────
+var PLAT_MAP = {
+  'TikTok':      { key: 'tk', cls: 'picon-tk' },
+  'Instagram':   { key: 'ig', cls: 'picon-ig' },
+  'YouTube':     { key: 'yt', cls: 'picon-yt' },
+  'X / Twitter': { key: 'x',  cls: 'picon-x'  },
+  'SoundCloud':  { key: 'sc', cls: 'picon-sc'  },
+  'Spotify':     { key: 'sp', cls: 'picon-sp'  }
+};
+
+function loadClips() {
+  var s = localStorage.getItem('sc_clips');
+  if (s) { try { return JSON.parse(s); } catch(e) {} }
+  return [];
+}
+function saveClips(clips) { localStorage.setItem('sc_clips', JSON.stringify(clips)); }
+
+function clipCategory(tags) {
+  var t = (tags || '').split(' ');
+  var order = ['music','podcast','tv-film','gaming','trending'];
+  for (var i = 0; i < order.length; i++) { if (t.indexOf(order[i]) !== -1) return order[i]; }
+  return 'other';
+}
+
+function fmtDate(ts) {
+  var d = new Date(ts);
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + ' ' + d.getDate();
+}
+
+function renderClips() {
+  var allClips = loadClips();
+  var admin    = isAdmin();
+  var me       = '';
+  try { me = JSON.parse(localStorage.getItem('sc_user')).email; } catch(e) {}
+
+  // Admin sees everything; others see only their own submissions
+  var clips = admin ? allClips : allClips.filter(function(c) {
+    return c.submittedBy === me || (!c.submittedBy && me);
+  });
+
+  var tbody = document.getElementById('clips-tbody');
+  var sub   = document.getElementById('clips-sub');
+  var cnt   = document.getElementById('clips-count');
+  if (!tbody) return;
+
+  var n = clips.length;
+  var label = admin ? ' clips total (all users)' : (n === 1 ? ' clip' : ' clips') + ' posted · all time';
+  if (sub) sub.textContent = n + label;
+  if (cnt) cnt.textContent = 'Showing ' + n + (n === 1 ? ' clip' : ' clips');
+
+  if (n === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px 20px;color:var(--text3);font-size:13px">' +
+      'No clips submitted yet. <a onclick="goTo(\'submit\')" style="cursor:pointer;color:var(--text);text-decoration:underline">Submit your first clip →</a>' +
+      '</td></tr>';
+    filterClips();
+    return;
+  }
+
+  var sorted = clips.slice().sort(function(a, b) { return b.id - a.id; });
+  tbody.innerHTML = sorted.map(function(c) {
+    var badge = c.status === 'approved' ? '<span class="badge badge-green">Approved</span>'
+              : c.status === 'rejected' ? '<span class="badge badge-red">Rejected</span>'
+              : '<span class="badge badge-amber">Pending</span>';
+    var dash  = '<span style="color:var(--text3);font-family:\'DM Mono\',monospace;font-size:13px">—</span>';
+    var earn  = c.status === 'approved' && c.earned != null ? '<span class="earn-val">$' + c.earned + '</span>' : dash;
+    var views = c.views != null ? '<span class="views-val">' + c.views + '</span>' : dash;
+    var campaignCell = admin && c.submittedBy
+      ? '<strong>' + c.campaign + '</strong><br><span style="font-size:10px;color:var(--text3);font-family:\'DM Mono\',monospace">' + c.submittedBy + '</span>'
+      : '<strong>' + c.campaign + '</strong>';
+    return '<tr data-status="' + c.status + '" data-category="' + c.category + '">' +
+      '<td><div class="clip-thumb">' + (c.emoji || '🎬') + '</div></td>' +
+      '<td>' + campaignCell + '</td>' +
+      '<td><div class="platform-icons"><span class="picon ' + c.platCls + '">' + c.platKey.toUpperCase() + '</span></div></td>' +
+      '<td style="color:var(--text3);font-family:\'DM Mono\',monospace;font-size:12px">' + fmtDate(c.id) + '</td>' +
+      '<td>' + views + '</td>' +
+      '<td>' + badge + '</td>' +
+      '<td>' + earn + '</td>' +
+      '</tr>';
+  }).join('');
+  filterClips();
+}
+
+function populateSubmitSelect() {
+  var sel = document.getElementById('submit-campaign');
+  if (!sel) return;
+  var campaigns = loadCampaigns().filter(function(c) { return c.status !== 'private'; });
+  sel.innerHTML = '<option value="">Select a campaign…</option>';
+  campaigns.forEach(function(c) {
+    var maxRate = Math.max(c.tk || 0, c.ig || 0, c.yt || 0, c.x || 0);
+    var label = c.rateType === 'pot'
+      ? c.name + ' — Pot ' + (c.potValue >= 1000 ? '$' + (c.potValue / 1000) + 'K' : '$' + c.potValue)
+      : c.name + ' — up to $' + maxRate + '/100K';
+    var opt = document.createElement('option');
+    opt.value = String(c.id);
+    opt.textContent = label;
+    sel.appendChild(opt);
+  });
+}
+
+function submitClip() {
+  var sel   = document.getElementById('submit-campaign');
+  var urlEl = document.getElementById('submit-url');
+  var err   = document.getElementById('submit-error');
+  err.style.display = 'none';
+
+  if (!sel.value) { err.textContent = 'Please select a campaign.'; err.style.display = ''; sel.focus(); return; }
+  if (!urlEl.value.trim()) { err.textContent = 'Please enter the clip URL.'; err.style.display = ''; urlEl.focus(); return; }
+
+  var platBtn  = document.querySelector('#page-submit .plat-btn.selected');
+  var platName = platBtn ? platBtn.querySelector('.plat-name').textContent.trim() : 'TikTok';
+  var platInfo = PLAT_MAP[platName] || { key: 'tk', cls: 'picon-tk' };
+
+  var campaigns = loadCampaigns();
+  var campaign  = campaigns.find(function(c) { return String(c.id) === sel.value; });
+  if (!campaign) return;
+
+  var me = localStorage.getItem('sc_user');
+  var submittedBy = '';
+  try { submittedBy = JSON.parse(me).email; } catch(e) {}
+
+  var clip = {
+    id:          Date.now(),
+    campaign:    campaign.name,
+    campaignId:  campaign.id,
+    category:    clipCategory(campaign.tags),
+    emoji:       campaign.emoji,
+    platKey:     platInfo.key,
+    platCls:     platInfo.cls,
+    url:         urlEl.value.trim(),
+    notes:       (document.getElementById('submit-notes').value || '').trim(),
+    status:      'pending',
+    views:       null,
+    earned:      null,
+    submittedBy: submittedBy
+  };
+
+  var clips = loadClips();
+  clips.push(clip);
+  saveClips(clips);
+
+  // Reset form
+  sel.value = '';
+  urlEl.value = '';
+  document.getElementById('submit-notes').value = '';
+  document.querySelectorAll('#page-submit .plat-btn').forEach(function(b) { b.classList.remove('selected'); });
+  if (document.querySelector('#page-submit .plat-btn')) {
+    document.querySelector('#page-submit .plat-btn').classList.add('selected');
+  }
+
+  renderClips();
+  goTo('clips');
+}
+
+// ── Campaign filtering ───────────────────────────────────────
+function filterCampaigns() {
+  const activeChip = document.querySelector('#page-campaigns .filter-chip.active');
+  const tag = activeChip ? activeChip.dataset.filter : 'all';
+  const q = (document.querySelector('#page-campaigns .search-box input').value || '').toLowerCase().trim();
+
+  document.querySelectorAll('#page-campaigns .campaign-card').forEach(card => {
+    const name = (card.querySelector('.cc-name') || {}).textContent.toLowerCase();
+    const tags = card.dataset.tags || '';
+    const matchTag = tag === 'all' || tags.includes(tag);
+    const matchSearch = !q || name.includes(q);
+    card.style.display = (matchTag && matchSearch) ? '' : 'none';
+  });
+}
+
+// ── My Clips filtering ───────────────────────────────────────
+function filterClips() {
+  const activeChip = document.querySelector('#page-clips .filter-chip.active');
+  const f = activeChip ? activeChip.dataset.filter : 'all';
+
+  document.querySelectorAll('#page-clips tbody tr').forEach(row => {
+    if (f === 'all') { row.style.display = ''; return; }
+    const status = row.dataset.status || '';
+    const category = row.dataset.category || '';
+    row.style.display = (status === f || category === f) ? '' : 'none';
+  });
+}
+
+// ── Filter chip click handler ────────────────────────────────
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', function () {
+    const bar = this.closest('.filter-bar');
+    if (bar) bar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+
+    if (this.closest('#page-campaigns')) filterCampaigns();
+    if (this.closest('#page-clips')) filterClips();
+  });
+});
+
+// ── Campaign search ──────────────────────────────────────────
+document.querySelector('#page-campaigns .search-box input').addEventListener('input', filterCampaigns);
+
+// ── Auth ─────────────────────────────────────────────────────
+function applyUser(user) {
+  document.getElementById('sidebar-name').textContent = user.name;
+  document.getElementById('sidebar-handle').textContent = user.email;
+  document.getElementById('sidebar-avatar').textContent = user.initial;
+}
+
+function showAccountPicker() {
+  const picker = document.getElementById('account-picker');
+  picker.style.display = 'flex';
+}
+
+function hideAccountPicker() {
+  document.getElementById('account-picker').style.display = 'none';
+}
+
+function signIn(name, email, initial) {
+  const user = { name, email, initial };
+  localStorage.setItem('sc_user', JSON.stringify(user));
+  hideAccountPicker();
+  document.getElementById('auth-overlay').style.display = 'none';
+  applyUser(user);
+  renderCampaigns();
+  renderClips();
+  renderAccounts();
+}
+
+function signInWithEmail() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('auth-email').style.borderColor = '#dc2626';
+    setTimeout(() => document.getElementById('auth-email').style.borderColor = '#e0dfd9', 1800);
+    return;
+  }
+  const name = email.split('@')[0];
+  const initial = name[0].toUpperCase();
+  signIn(name, email, initial);
+}
+
+function toggleUserMenu() {
+  const menu = document.getElementById('user-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function signOut() {
+  localStorage.removeItem('sc_user');
+  document.getElementById('user-menu').style.display = 'none';
+  goTo('home');
+  document.getElementById('auth-overlay').style.display = 'flex';
+}
+
+// ── Campaign Data & Admin ─────────────────────────────────────
+var ADMIN_EMAIL = 'jlw1296josh@gmail.com';
+
+var DEFAULT_CAMPAIGNS = [
+  { id:1,  emoji:'📈', bg:'#e8f5e9', name:'Kalshi',             status:'active',   daysLeft:29, tags:'trending high-pay',          rateType:'per100k', tk:100, ig:100, yt:100, x:100,  minViews:100,  potValue:null },
+  { id:2,  emoji:'👟', bg:'#e3f2fd', name:'Fanatics',           status:'active',   daysLeft:27, tags:'trending high-pay',          rateType:'per100k', tk:100, ig:100, yt:100, x:null, minViews:100,  potValue:null },
+  { id:3,  emoji:'🥊', bg:'#fff3e0', name:'Kick Hispano',       status:'private',  daysLeft:29, tags:'gaming',                     rateType:'per100k', tk:null,ig:null,yt:null,x:null, minViews:null, potValue:null },
+  { id:4,  emoji:'🎪', bg:'#f3e5f5', name:'EDC',                status:'active',   daysLeft:23, tags:'music',                      rateType:'per100k', tk:100, ig:100, yt:100, x:100,  minViews:50,   potValue:null },
+  { id:5,  emoji:'🌸', bg:'#fce4ec', name:'Lacy',               status:'active',   daysLeft:5,  tags:'music ending-soon high-pay', rateType:'pot',     tk:null,ig:null,yt:null,x:null, minViews:500,  potValue:20000 },
+  { id:6,  emoji:'🎤', bg:'#e8eaf6', name:'Drake',              status:'active',   daysLeft:21, tags:'music',                      rateType:'per100k', tk:40,  ig:40,  yt:null,x:40,   minViews:100,  potValue:null },
+  { id:7,  emoji:'🎼', bg:'#e0f7fa', name:'John Malek',         status:'active',   daysLeft:20, tags:'music high-pay',             rateType:'per100k', tk:250, ig:250, yt:250, x:null, minViews:100,  potValue:null },
+  { id:8,  emoji:'🎙️',bg:'#fff8e1', name:'Impaulsive',         status:'active',   daysLeft:18, tags:'podcast',                    rateType:'per100k', tk:50,  ig:50,  yt:50,  x:null, minViews:100,  potValue:null },
+  { id:9,  emoji:'👑', bg:'#fce4ec', name:"Ru Paul's Drag Race",status:'active',   daysLeft:15, tags:'tv-film',                    rateType:'per100k', tk:50,  ig:50,  yt:50,  x:null, minViews:100,  potValue:null },
+  { id:10, emoji:'🥊', bg:'#e8f5e9', name:'Kick Clipping',      status:'private',  daysLeft:32, tags:'gaming high-pay',            rateType:'per100k', tk:300, ig:300, yt:300, x:null, minViews:null, potValue:null },
+  { id:11, emoji:'🔥', bg:'#e8eaf6', name:'YourRAGE',           status:'active',   daysLeft:12, tags:'gaming ending-soon high-pay',rateType:'pot',     tk:null,ig:null,yt:null,x:null, minViews:100,  potValue:5000 },
+  { id:12, emoji:'💎', bg:'#f3e5f5', name:'Stake Bounties',     status:'private',  daysLeft:17, tags:'gaming high-pay',            rateType:'per100k', tk:300, ig:300, yt:300, x:null, minViews:null, potValue:null }
+];
+
+function isAdmin() {
+  var s = localStorage.getItem('sc_user');
+  if (!s) return false;
+  try { return JSON.parse(s).email === ADMIN_EMAIL; } catch(e) { return false; }
+}
+
+function loadCampaigns() {
+  var s = localStorage.getItem('sc_campaigns');
+  if (s) { try { return JSON.parse(s); } catch(e) {} }
+  return DEFAULT_CAMPAIGNS.map(function(c) { return Object.assign({}, c); });
+}
+
+function saveCampaigns(campaigns) {
+  localStorage.setItem('sc_campaigns', JSON.stringify(campaigns));
+}
+
+function renderCampaignCard(c, admin) {
+  var badge = c.status === 'active'  ? '<span class="badge badge-green">● Active</span>'
+            : c.status === 'private' ? '<span class="badge badge-dark">🔒 Private</span>'
+            : '<span class="badge badge-green">● Active</span>';
+
+  var clickAttr = (c.status === 'private' && !admin) ? '' : ' onclick="goTo(\'submit\')"';
+
+  var ratesHtml;
+  if (c.rateType === 'pot') {
+    var pv = c.potValue ? (c.potValue >= 1000 ? '$' + (c.potValue / 1000) + 'K' : '$' + c.potValue) : '?';
+    ratesHtml = '<div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-family:\'DM Mono\',monospace">POT VALUE</div>' +
+      '<div class="pot-value" style="margin-bottom:10px">↑ ' + pv + '</div>' +
+      '<div class="cc-rates">' +
+      '<div class="rate-item"><span class="picon picon-tk">TK</span><span class="rate-val">–</span></div>' +
+      '<div class="rate-item"><span class="picon picon-ig">IG</span><span class="rate-val">–</span></div>' +
+      '<div class="rate-item"><span class="picon picon-yt">YT</span><span class="rate-val">–</span></div>' +
+      '</div>';
+  } else {
+    var label = c.status === 'private' ? 'RATE PER 100K' : 'UP TO PER 100K';
+    ratesHtml = '<div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:\'DM Mono\',monospace">' + label + '</div><div class="cc-rates">';
+    if (c.tk != null) ratesHtml += '<div class="rate-item"><span class="picon picon-tk">TK</span><span class="rate-val">$' + c.tk + '</span></div>';
+    if (c.ig != null) ratesHtml += '<div class="rate-item"><span class="picon picon-ig">IG</span><span class="rate-val">$' + c.ig + '</span></div>';
+    if (c.yt != null) ratesHtml += '<div class="rate-item"><span class="picon picon-yt">YT</span><span class="rate-val">$' + c.yt + '</span></div>';
+    if (c.x  != null) ratesHtml += '<div class="rate-item"><span class="picon picon-x">X</span><span class="rate-val">$' + c.x  + '</span></div>';
+    ratesHtml += '</div>';
+  }
+
+  var footer = c.minViews ? '<div class="cc-footer">Min ' + c.minViews + 'K views to qualify</div>' : '';
+  var lock   = (c.status === 'private' && !admin) ? '<div class="lock-overlay"><button class="lock-btn">🔒 Apply for Access</button></div>' : '';
+  var editBtn = admin
+    ? '<button onclick="event.stopPropagation();openEditCampaign(' + c.id + ')" style="position:absolute;top:8px;right:8px;border:1px solid var(--border2);background:#fff;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:\'DM Mono\',monospace;color:var(--text2);z-index:1;line-height:1.6">✏️ edit</button>'
+    : '';
+
+  return '<div class="campaign-card" data-tags="' + (c.tags || '') + '" data-id="' + c.id + '" style="position:relative"' + clickAttr + '>' +
+    editBtn +
+    '<div class="cc-top">' +
+    '<div class="cc-avatar" style="background:' + c.bg + ';font-size:22px">' + c.emoji + '</div>' +
+    '<div class="cc-info"><div class="cc-name">' + c.name + '</div>' +
+    '<div class="cc-meta">' + badge + '<span class="cc-days">' + c.daysLeft + ' days left</span></div>' +
+    '</div></div>' + ratesHtml + footer + lock + '</div>';
+}
+
+function renderCampaigns() {
+  var campaigns = loadCampaigns();
+  var admin = isAdmin();
+  var grid = document.getElementById('campaigns-grid');
+  if (!grid) return;
+  grid.innerHTML = campaigns.map(function(c) { return renderCampaignCard(c, admin); }).join('');
+  var nb = document.getElementById('new-campaign-btn');
+  if (nb) nb.style.display = admin ? '' : 'none';
+  filterCampaigns();
+}
+
+// ── Campaign Modal ────────────────────────────────────────────
+var _editingId = null;
+var _BG_POOL = ['#e8f5e9','#e3f2fd','#fff3e0','#f3e5f5','#fce4ec','#e8eaf6','#e0f7fa','#fff8e1','#dcfce7','#e0e7ff'];
+
+function openCreateCampaign() {
+  _editingId = null;
+  document.getElementById('camp-modal-title').textContent = 'New Campaign';
+  document.getElementById('camp-delete-btn').style.display = 'none';
+  document.getElementById('camp-emoji').value = '🎵';
+  document.getElementById('camp-name').value = '';
+  document.getElementById('camp-name').style.borderColor = '';
+  document.getElementById('camp-status').value = 'active';
+  document.getElementById('camp-days').value = '30';
+  document.getElementById('camp-rate-type').value = 'per100k';
+  document.getElementById('camp-tk').value = '';
+  document.getElementById('camp-ig').value = '';
+  document.getElementById('camp-yt').value = '';
+  document.getElementById('camp-x').value = '';
+  document.getElementById('camp-min-views').value = '';
+  document.getElementById('camp-pot-value').value = '';
+  document.querySelectorAll('#camp-modal .tag-check').forEach(function(cb) { cb.checked = false; });
+  togglePotFields();
+  document.getElementById('camp-modal').style.display = 'flex';
+}
+
+function openEditCampaign(id) {
+  var campaigns = loadCampaigns();
+  var c = campaigns.find(function(x) { return x.id === id; });
+  if (!c) return;
+  _editingId = id;
+  document.getElementById('camp-modal-title').textContent = 'Edit Campaign';
+  document.getElementById('camp-delete-btn').style.display = '';
+  document.getElementById('camp-emoji').value = c.emoji;
+  document.getElementById('camp-name').value = c.name;
+  document.getElementById('camp-name').style.borderColor = '';
+  document.getElementById('camp-status').value = c.status;
+  document.getElementById('camp-days').value = c.daysLeft;
+  document.getElementById('camp-rate-type').value = c.rateType || 'per100k';
+  document.getElementById('camp-tk').value = c.tk != null ? c.tk : '';
+  document.getElementById('camp-ig').value = c.ig != null ? c.ig : '';
+  document.getElementById('camp-yt').value = c.yt != null ? c.yt : '';
+  document.getElementById('camp-x').value  = c.x  != null ? c.x  : '';
+  document.getElementById('camp-min-views').value  = c.minViews  != null ? c.minViews  : '';
+  document.getElementById('camp-pot-value').value  = c.potValue  != null ? c.potValue  : '';
+  var tagArr = (c.tags || '').split(' ');
+  document.querySelectorAll('#camp-modal .tag-check').forEach(function(cb) {
+    cb.checked = tagArr.indexOf(cb.value) !== -1;
+  });
+  togglePotFields();
+  document.getElementById('camp-modal').style.display = 'flex';
+}
+
+function closeCampaignModal() {
+  document.getElementById('camp-modal').style.display = 'none';
+  _editingId = null;
+}
+
+function togglePotFields() {
+  var isPot = document.getElementById('camp-rate-type').value === 'pot';
+  document.getElementById('camp-rates-section').style.display = isPot ? 'none' : '';
+  document.getElementById('camp-pot-section').style.display   = isPot ? '' : 'none';
+}
+
+function saveCampaignModal() {
+  var name = document.getElementById('camp-name').value.trim();
+  if (!name) {
+    document.getElementById('camp-name').style.borderColor = '#dc2626';
+    return;
+  }
+  document.getElementById('camp-name').style.borderColor = '';
+
+  var campaigns = loadCampaigns();
+  var emoji    = document.getElementById('camp-emoji').value.trim() || '🎵';
+  var status   = document.getElementById('camp-status').value;
+  var daysLeft = parseInt(document.getElementById('camp-days').value) || 30;
+  var rateType = document.getElementById('camp-rate-type').value;
+
+  var tags = [];
+  document.querySelectorAll('#camp-modal .tag-check:checked').forEach(function(cb) { tags.push(cb.value); });
+
+  function numOrNull(id) {
+    var v = document.getElementById(id).value;
+    return v !== '' ? parseInt(v) : null;
+  }
+
+  var tk       = numOrNull('camp-tk');
+  var ig       = numOrNull('camp-ig');
+  var yt       = numOrNull('camp-yt');
+  var x        = numOrNull('camp-x');
+  var minViews = numOrNull('camp-min-views');
+  var potValue = numOrNull('camp-pot-value');
+
+  if (_editingId !== null) {
+    var idx = campaigns.findIndex(function(c) { return c.id === _editingId; });
+    if (idx !== -1) {
+      Object.assign(campaigns[idx], { emoji, name, status, daysLeft, tags: tags.join(' '), rateType, tk, ig, yt, x, minViews, potValue });
+    }
+  } else {
+    var bg = _BG_POOL[Math.floor(Math.random() * _BG_POOL.length)];
+    campaigns.push({ id: Date.now(), emoji, bg, name, status, daysLeft, tags: tags.join(' '), rateType, tk, ig, yt, x, minViews, potValue });
+  }
+
+  saveCampaigns(campaigns);
+  closeCampaignModal();
+  renderCampaigns();
+}
+
+function deleteCampaignModal() {
+  if (_editingId === null) return;
+  if (!confirm('Delete this campaign? This cannot be undone.')) return;
+  var campaigns = loadCampaigns().filter(function(c) { return c.id !== _editingId; });
+  saveCampaigns(campaigns);
+  closeCampaignModal();
+  renderCampaigns();
+}
+
+// ── Close user menu when clicking outside
+document.addEventListener('click', function(e) {
+  const card = document.getElementById('user-card-btn');
+  const menu = document.getElementById('user-menu');
+  if (menu && card && !card.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
+// Check auth on load
+(function() {
+  const stored = localStorage.getItem('sc_user');
+  if (stored) {
+    try {
+      const user = JSON.parse(stored);
+      document.getElementById('auth-overlay').style.display = 'none';
+      applyUser(user);
+    } catch(e) {
+      localStorage.removeItem('sc_user');
+    }
+  }
+  renderCampaigns();
+  renderClips();
+  renderAccounts();
+})();
+
+// ── Accounts ──────────────────────────────────────────────
+var PLATFORMS = [
+  { key:'tiktok',    name:'TikTok',     emoji:'🎵', bg:'#ffe4e8', followerLabel:'Followers' },
+  { key:'instagram', name:'Instagram',  emoji:'📸', bg:'#f3e8ff', followerLabel:'Followers' },
+  { key:'youtube',   name:'YouTube',    emoji:'▶️', bg:'#fee2e2', followerLabel:'Subscribers' },
+  { key:'twitter',   name:'X / Twitter',emoji:'✖️', bg:'#e0e7ff', followerLabel:'Followers' },
+  { key:'soundcloud',name:'SoundCloud', emoji:'☁️', bg:'#fff7ed', followerLabel:'Followers' },
+  { key:'spotify',   name:'Spotify',    emoji:'🎵', bg:'#dcfce7', followerLabel:'Followers' }
+];
+
+function loadAccounts() {
+  try { return JSON.parse(localStorage.getItem('sc_accounts')) || {}; } catch(e) { return {}; }
+}
+function saveAccounts(a) { localStorage.setItem('sc_accounts', JSON.stringify(a)); }
+
+function renderAccounts() {
+  var grid = document.getElementById('accounts-grid');
+  if (!grid) return;
+  var accts = loadAccounts();
+  grid.innerHTML = PLATFORMS.map(function(p) {
+    var a = accts[p.key];
+    if (a) {
+      return '<div class="account-card">' +
+        '<div class="acc-top">' +
+          '<div class="acc-platform-icon" style="background:'+p.bg+'">'+p.emoji+'</div>' +
+          '<div>' +
+            '<div class="acc-name">'+p.name+'</div>' +
+            '<div class="acc-handle">@'+a.handle+'</div>' +
+          '</div>' +
+          '<span class="badge badge-green" style="margin-left:auto">Connected</span>' +
+        '</div>' +
+        '<div class="acc-stats">' +
+          '<div class="acc-stat"><div class="acc-stat-val">—</div><div class="acc-stat-label">'+p.followerLabel+'</div></div>' +
+          '<div class="acc-stat"><div class="acc-stat-val">—</div><div class="acc-stat-label">Total Views</div></div>' +
+          '<div class="acc-stat"><div class="acc-stat-val">—</div><div class="acc-stat-label">Avg Engage</div></div>' +
+          '<div class="acc-stat"><div class="acc-stat-val">—</div><div class="acc-stat-label">Clips Posted</div></div>' +
+        '</div>' +
+        '<button onclick="disconnectAccount(\''+p.key+'\')" style="margin-top:12px;width:100%;border:1px solid var(--border);background:none;border-radius:6px;padding:7px;font-size:12px;color:var(--text2);cursor:pointer;font-family:inherit">Disconnect</button>' +
+      '</div>';
+    } else {
+      return '<div class="account-card">' +
+        '<div class="acc-top">' +
+          '<div class="acc-platform-icon" style="background:'+p.bg+'">'+p.emoji+'</div>' +
+          '<div>' +
+            '<div class="acc-name">'+p.name+'</div>' +
+            '<div class="acc-handle" style="color:var(--text3)">Not connected</div>' +
+          '</div>' +
+          '<span class="badge" style="margin-left:auto;background:var(--bg2);color:var(--text3)">None</span>' +
+        '</div>' +
+        '<button class="connect-btn" onclick="openConnectModal(\''+p.key+'\')">+ Connect '+p.name+'</button>' +
+      '</div>';
+    }
+  }).join('');
+}
+
+var _connectingKey = null;
+
+function _setConnectModalPlatform(p) {
+  _connectingKey = p.key;
+  document.getElementById('connect-modal-icon').style.background = p.bg;
+  document.getElementById('connect-modal-icon').textContent = p.emoji;
+  document.getElementById('connect-modal-title').textContent = 'Connect ' + p.name;
+  document.getElementById('connect-modal-sub').textContent = 'Enter your ' + p.name + ' username to link your account.';
+  document.getElementById('connect-platform-list').style.display = 'none';
+  document.getElementById('connect-handle').focus();
+}
+
+function selectConnectPlatform(key) {
+  var p = PLATFORMS.filter(function(x){return x.key===key;})[0];
+  if (p) _setConnectModalPlatform(p);
+}
+
+function openConnectModal(key) {
+  _connectingKey = null;
+  document.getElementById('connect-handle').value = '';
+  document.getElementById('connect-error').style.display = 'none';
+  if (key) {
+    var p = PLATFORMS.filter(function(x){return x.key===key;})[0];
+    _setConnectModalPlatform(p);
+  } else {
+    document.getElementById('connect-modal-icon').style.background = '#f0efea';
+    document.getElementById('connect-modal-icon').textContent = '🔗';
+    document.getElementById('connect-modal-title').textContent = 'Connect Account';
+    document.getElementById('connect-modal-sub').textContent = 'Choose a platform, then enter your username.';
+    var list = document.getElementById('connect-platform-list');
+    list.style.display = '';
+    var accts = loadAccounts();
+    var available = PLATFORMS.filter(function(p){ return !accts[p.key]; });
+    if (available.length === 0) {
+      list.innerHTML = '<div style="font-size:13px;color:var(--text2)">All platforms are already connected.</div>';
+    } else {
+      document.getElementById('connect-platform-btns').innerHTML = available.map(function(p) {
+        return '<button data-pkey="'+p.key+'" onclick="selectConnectPlatform(this.dataset.pkey)" style="border:1px solid var(--border);border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer;background:#fff;font-family:inherit;display:flex;align-items:center;gap:6px"><span style="font-size:16px">'+p.emoji+'</span>'+p.name+'</button>';
+      }).join('');
+    }
+  }
+  document.getElementById('connect-modal').style.display = 'flex';
+}
+
+function closeConnectModal() {
+  document.getElementById('connect-modal').style.display = 'none';
+  _connectingKey = null;
+}
+
+function saveConnectModal() {
+  var handle = document.getElementById('connect-handle').value.trim().replace(/^@/,'');
+  var err    = document.getElementById('connect-error');
+  if (!_connectingKey) { err.textContent = 'Please select a platform.'; err.style.display = ''; return; }
+  if (!handle) { err.textContent = 'Please enter a username or handle.'; err.style.display = ''; return; }
+  var accts = loadAccounts();
+  accts[_connectingKey] = { handle: handle, connectedAt: Date.now() };
+  saveAccounts(accts);
+  closeConnectModal();
+  renderAccounts();
+}
+
+function disconnectAccount(key) {
+  var p = PLATFORMS.filter(function(x){return x.key===key;})[0];
+  if (!confirm('Disconnect your ' + p.name + ' account?')) return;
+  var accts = loadAccounts();
+  delete accts[key];
+  saveAccounts(accts);
+  renderAccounts();
+}
+</script>
+</body>
+</html>
